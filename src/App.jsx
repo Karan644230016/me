@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import './App.css'
-import ButtonMetamask from './components/ButtonMetamask'
+import ConnectWeb3 from './components/ConnectWeb3'
+import AddActivity from './components/addActivity'
 function App() {
 
   return (
     <>
-     <header>
-        <ButtonMetamask/>
+      <header>
+        {/* <ConnectWeb3 /> */}
+        <AddActivity/>
       </header>
     </>
   )
