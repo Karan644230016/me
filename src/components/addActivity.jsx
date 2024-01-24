@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
 import Web3 from 'web3';
 import ABI from '../contract/abi.json';
 
@@ -10,6 +9,8 @@ function AddActivity() {
   const [balance, setBalance] = useState('');
   const [contract, setContract] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [activityInfo, setActivityInfo] = useState(null);
+  const [allActivities, setAllActivities] = useState([]);
 
   const contractAddress = '0xd463F0C5FE7c101DF018ebb71B8E92364a77C43b';
 
@@ -70,6 +71,34 @@ function AddActivity() {
     }
   };
 
+  const getActivityInfo = async () => {
+    try {
+      if (contract) {
+        const activityInfoResult = await contract.methods.getActivity(activityName).call();
+        setActivityInfo(activityInfoResult);
+      } else {
+        console.error('Contract not connected.');
+      }
+    } catch (error) {
+      console.error('Error getting activity info:', error.message);
+      setActivityInfo(null); // Clear activityInfo on error
+    }
+  };
+
+  const getAllActivities = async () => {
+    try {
+      if (contract) {
+        const allActivitiesResult = await contract.methods.getAllActivity().call();
+        console.log("All Activities:", allActivitiesResult);
+        setAllActivities(allActivitiesResult);
+      } else {
+        console.error('Contract not connected.');
+      }
+    } catch (error) {
+      console.error('Error getting all activities:', error.message);
+    }
+  };
+
   useEffect(() => {
     const handleNetworkChange = () => {
       connectMetamask();
@@ -107,29 +136,74 @@ function AddActivity() {
       </div>
 
       {isConnected && (
-        <form className="m-3" onSubmit={handleSubmit}>
-          <label className="block text-start m-3">Activity</label>
-          <input
-            type="text"
-            placeholder="Activity Name"
-            className="input input-bordered input-info w-full max-w-xs"
-            value={activityName}
-            onChange={(e) => setActivityName(e.target.value)}
-          />
+        <div>
+          <form className="m-3" onSubmit={handleSubmit}>
+            <label className="block text-start m-3">Activity</label>
+            <input
+              type="text"
+              placeholder="Activity Name"
+              className="input input-bordered input-info w-full max-w-xs"
+              value={activityName}
+              onChange={(e) => setActivityName(e.target.value)}
+            />
 
-          <label className="block text-start m-3">StudentID</label>
-          <input
-            type="number"
-            placeholder="StudentID"
-            className="input input-bordered input-info w-full max-w-xs"
-            value={studentID}
-            onChange={(e) => setStudentID(e.target.value)}
-          />
+            <label className="block text-start m-3">StudentID</label>
+            <input
+              type="number"
+              placeholder="StudentID"
+              className="input input-bordered input-info w-full max-w-xs"
+              value={studentID}
+              onChange={(e) => setStudentID(e.target.value)}
+            />
 
-          <button type="submit" className="block btn glass mt-5">
-            Submit
+            <button type="submit" className="block btn glass mt-5">
+              Submit
+            </button>
+          </form>
+
+          {/* <button
+            onClick={getActivityInfo}
+            className="block btn glass mt-5"
+            disabled={!activityName.trim()} // Disable the button if activityName is empty or contains only whitespace
+          >
+            Get Activity Info
           </button>
-        </form>
+
+          {activityInfo && activityInfo.Join && activityInfo.Join.length > 0 ? (
+            <div>
+              <h2>Activity Information:</h2>
+              <p>Student ID: {activityInfo.Join[0]?.studentID}</p>
+              <p>Status: {activityInfo.Join[0]?.status ? 'Joined' : 'Not Joined'}</p>
+            </div>
+          ) : (
+            <div>
+              {activityInfo === null ? (
+                <p>Error retrieving activity information. Please try again.</p>
+              ) : (
+                <p>No activity information available for the specified activity name.</p>
+              )}
+              <pre>{JSON.stringify(activityInfo, null, 2)}</pre>
+            </div>
+          )} */}
+
+          <button
+            onClick={getAllActivities}
+            className="block btn glass mt-5"
+          >
+            Get All Activities
+          </button>
+
+          {allActivities.length > 0 && (
+            <div>
+              <h2>All Activities:</h2>
+              <ul>
+                {allActivities.map((activity, index) => (
+                  <li key={index}>{activity}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
