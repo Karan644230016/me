@@ -117,7 +117,7 @@ function AddActivity() {
 
   return (
     <div>
-      <div className="navbar p-3 border-b border-white rounded">
+      <div className="navbar p-3 border-b border-white rounded bg-color" >
         <div className="navbar-start">
           <a className="btn btn-ghost text-xl">NPRU</a>
         </div>
